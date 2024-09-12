@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model users {
+  id                                 String          @id
+  name                               String?
+  username                           String?         @unique @db.VarChar(150)
+  email                              String          @unique @db.VarChar(150)
+  password                           String          @db.VarChar(255)
+  meta_profile_link                  String?
+  country                            String?
+  isPublic                           Boolean         @default(false)
+  role                               ROLE            @default(USER)
+  bio                                String?
+  tags                               String[]
+  created_at                         DateTime        @default(now())
+  updated_at                         DateTime        @default(now())
+  isVerified                         Boolean         @default(false)
+  diary                              diary[]
+  // likes                              likes[]
+  posts                              posts[]
+  // quote                              random_quotes[]
+  reminders                          reminders[]
+}
+
+enum ROLE {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+
+model posts {
+  id              Int               @id @default(autoincrement())
+  text            String
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now())
+  user_id         String
+  tags            String[]
+  category        CATEGORY
+  image_link_post image_link_post[]
+  // likes           likes[]
+  users           users             @relation(fields: [user_id], references: [id])
+}
+
+
+enum CATEGORY {
+  LEARN
+  SPEECH
+}
+
+
+model image_link_post {
+  id         Int    @id @default(autoincrement())
+  post_id    Int
+  image_link String
+  posts      posts  @relation(fields: [post_id], references: [id])
+}
+
+
+model reminders {
+  id            Int      @id @default(autoincrement())
+  content       String
+  is_finished   Boolean  @default(false)
+  is_public     Boolean  @default(true)
+  deadline_time DateTime
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+  user_id       String
+  title         String
+  users         users    @relation(fields: [user_id], references: [id])
+}
+
+model diary {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  user_id    String
+  users      users    @relation(fields: [user_id], references: [id])
+}
+
+// model random_quotes {
+//   id         Int      @id @default(autoincrement())
+//   title      String
+//   content    String
+//   user_id    String
+//   created_at DateTime @default(now())
+//   updated_at DateTime @default(now())
+//   users      users    @relation(fields: [user_id], references: [id])
+// }
+
+
+// model follows {
+//   id                               String   @id
+//   followerId                       String
+//   followingId                      String
+//   createdAt                        DateTime @default(now())
+//   users_follows_followerIdTousers  users    @relation("follows_followerIdTousers", fields: [followerId], references: [id])
+//   users_follows_followingIdTousers users    @relation("follows_followingIdTousers", fields: [followingId], references: [id])
+
+//   @@unique([followerId, followingId])
+// }
+
+
+// model likes {
+//   id         Int      @id @default(autoincrement())
+//   user_id    String
+//   post_id    Int
+//   created_at DateTime @default(now())
+//   posts      posts    @relation(fields: [post_id], references: [id])
+//   users      users    @relation(fields: [user_id], references: [id])
+
+//   @@unique([user_id, post_id])
+// }

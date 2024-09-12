@@ -1,0 +1,293 @@
+openapi: 3.0.1
+info:
+  title: Ourair developer API
+  description: Full documentation API for Ourair Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:5901/api/v1
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: An error occurred
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: Password123!
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: success
+        '409':
+          description: Email is already registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: email is already registered
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: Password123!
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      id:
+                        type: string
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                      username:
+                        type: string
+                        example: user123
+                      avatar_link:
+                        type: string
+                        nullable: true
+                        example: https://example.com/avatar.jpg
+                      isPublic:
+                        type: boolean
+                        example: true
+                      isVerified:
+                        type: boolean
+                        example: false
+                      tags:
+                        type: array
+                        items:
+                          type: string
+                        example: [ "tag1", "tag2" ]
+                      role:
+                        type: string
+                        enum: [USER, ADMIN]
+                        example: USER
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: email is not registered or password is not match
+        '500':
+          description: Internal server error
+  /feature/user:
+    get:
+      summary: Get user profile
+      tags:
+        - Profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                      name:
+                        type: string
+                        example: John Doe
+                      username:
+                        type: string
+                        example: johndoe
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                      meta_profile_link:
+                        type: string
+                        example: https://example.com/profile/johndoe
+                      isVerified:
+                        type: boolean
+                        example: true
+                      country:
+                        type: string
+                        example: USA
+                      isPublic:
+                        type: boolean
+                        example: true
+                      role:
+                        type: string
+                        enum: [USER, ADMIN]
+                        example: USER
+                      bio:
+                        type: string
+                        example: Developer from USA
+                      tags:
+                        type: array
+                        items:
+                          type: string
+                        example: ["developer", "javascript"]
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: 2023-07-11T10:00:00Z
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: 2024-07-11T10:00:00Z
+                      followers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            username:
+                              type: string
+                              example: follower1
+                      following:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            username:
+                              type: string
+                              example: following1
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: User ID is required
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: An error occurred while fetching user profile
+# components:
+#   schemas:
+#     ErrorResponse:
+#       type: object
+#       properties:
+#         status:
+#           type: boolean
+#           example: false
+#         message:
+#           type: string
+#           example: An error occurred
+#     bearerAuth:
+#       type: http
+#       scheme: bearer
+#       bearerFormat: JWT

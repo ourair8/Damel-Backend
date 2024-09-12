@@ -1,0 +1,117 @@
+model BasicCardBulletJournal {
+  id              Int             @id @default(autoincrement())
+  content         String?
+  image_link      String?
+  bullet_id       Int
+  detail          Json
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+}
+
+model CommentBulletJournal {
+  id              Int             @id @default(autoincrement())
+  comment         String
+  bullet_id       Int
+  user_id         String
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+  users           users           @relation(fields: [user_id], references: [id])
+}
+
+model FreeImageCardBulletJournal {
+  id              Int             @id @default(autoincrement())
+  image_link      String
+  bullet_id       Int
+  detail          Json
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+}
+
+model FreeObjectBulletJournal {
+  id              Int             @id @default(autoincrement())
+  svg_content     String
+  bullet_id       Int
+  detail          Json
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+}
+
+model ListTextCardBulletJournal {
+  id              Int             @id @default(autoincrement())
+  content         Json            @db.Json
+  bullet_id       Int
+  detail          Json
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+}
+
+model ReactionBulletJournal {
+  id              Int             @id @default(autoincrement())
+  user_id         String
+  reaction        String
+  bullet_id       Int
+  created_at      DateTime
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+  users           users           @relation(fields: [user_id], references: [id])
+}
+
+model TaskCardBulletJournal {
+  id              Int             @id @default(autoincrement())
+  content         String
+  is_finished     Boolean         @default(false)
+  deadline_time   DateTime
+  created_at      DateTime
+  updated_at      DateTime
+  bullet_id       Int
+  user_id         String
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+  users           users           @relation(fields: [user_id], references: [id])
+}
+
+model DiaryListCardBulletJournal {
+  id              Int             @id @default(autoincrement())
+  content         String?
+  is_finished     Boolean         @default(false)
+  bullet_id       Int
+  detail          Json
+  bullet_journals bullet_journals @relation(fields: [bullet_id], references: [id])
+}
+
+model bullet_journals {
+  id                         Int                          @id @default(autoincrement())
+  index_name                 String                       @unique
+  is_public                  Boolean                      @default(false)
+  created_at                 DateTime
+  updated_at                 DateTime
+  user_id                    String
+  BasicCardBulletJournal     BasicCardBulletJournal[]
+  CommentBulletJournal       CommentBulletJournal[]
+  FreeImageCardBulletJournal FreeImageCardBulletJournal[]
+  FreeObjectBulletJournal    FreeObjectBulletJournal[]
+  ListTextCardBulletJournal  ListTextCardBulletJournal[]
+  ReactionBulletJournal      ReactionBulletJournal[]
+  TaskCardBulletJournal      TaskCardBulletJournal[]
+  DiaryListCardBulletJournal  DiaryListCardBulletJournal[]
+  users                      users                        @relation(fields: [user_id], references: [id])
+}
+
+
+model users {
+  id                                 String                  @id
+  name                               String?
+  username                           String?                 @unique @db.VarChar(150)
+  email                              String                  @unique @db.VarChar(150)
+  password                           String                  @db.VarChar(255)
+  meta_profile_link                  String?
+  is_Verified                        Boolean                 @default(false)
+  country                            String?
+  isPublic                           Boolean                 @default(false)
+  role                               ROLE                    @default(USER)
+  bio                                String?
+  tags                               String[]
+  created_at                         DateTime
+  updated_at                         DateTime
+  // CommentBulletJournal               CommentBulletJournal[]
+  // ReactionBulletJournal              ReactionBulletJournal[]
+  // TaskCardBulletJournal              TaskCardBulletJournal[]
+  // bullet_journals                    bullet_journals[]
+  posts                    posts[]
+  follows_follows_followerIdTousers  follows[]               @relation("follows_followerIdTousers")
+  follows_follows_followingIdTousers follows[]               @relation("follows_followingIdTousers")
+  reminders                          reminders[]
+}
